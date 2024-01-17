@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "../vehrlite-dashboard-api-service"
+		},
+		{
+			"path": "../project-manager"
+		},
+		{
+			"path": "../smpp-server"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {}
+}
