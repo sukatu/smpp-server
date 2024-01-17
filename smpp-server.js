@@ -34,7 +34,7 @@ const startSMPPServer = () => {
 
     });
 
-    server.listen(2775);
+    server.listen(8056);
 
     function checkAsyncUserPass(session, systemId, password, ipAddress, callback) {
         ipAddress = ipAddress.replace(/^::ffff:/, '');
