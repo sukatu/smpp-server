@@ -72,7 +72,7 @@ function sendSukatuMessage(senderId, recipient, messageText, callback) {
         password: 'ASIsmpp9',
     }, (bindPdu) => {
         if (bindPdu.command_status === 0) {
-            console.log('Successfully bound to the SMPP server for sending messages');
+            console.log('Successfully bound to the SMPP server for se nding messages');
 
             const messageOptions = {
                 registered_delivery: 1,
