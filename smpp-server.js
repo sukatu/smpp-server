@@ -46,7 +46,7 @@ const server = smpp.createServer({
     });
 });
 
-server.listen(2775);
+server.listen(62143);
 
 function checkAsyncUserPass(session, systemId, password, ipAddress, callback) {
     ipAddress = ipAddress.replace(/^::ffff:/, '');
