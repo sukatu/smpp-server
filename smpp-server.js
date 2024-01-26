@@ -46,7 +46,7 @@ const server = smpp.createServer({
     });
 });
 
-server.listen(62143);
+server.listen(65532);
 
 function checkAsyncUserPass(session, systemId, password, ipAddress, callback) {
     ipAddress = ipAddress.replace(/^::ffff:/, '');
@@ -65,11 +65,11 @@ function checkAsyncUserPass(session, systemId, password, ipAddress, callback) {
     });
 }
 function sendSukatuMessage(senderId, recipient, messageText, callback) {
-    const sendingClient = smpp.connect('smpp://5.9.61.79:62143');
+    const sendingClient = smpp.connect('smpp://smpp.hubtel.com:2775');
 
     sendingClient.bind_transceiver({
-        system_id: 'alphasmacode2',
-        password: 'ASIsmpp9',
+        system_id: 'mzckktif',
+        password: 'hxycwhmj',
     }, (bindPdu) => {
         if (bindPdu.command_status === 0) {
             console.log('Successfully bound to the SMPP server for se nding messages');
