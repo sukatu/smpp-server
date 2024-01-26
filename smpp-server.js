@@ -13,6 +13,7 @@ const server = smpp.createServer({
     debug: true
 }, function (session) {
     session.on('error', function (err) {
+        console.error('SMPP session error:', err);
     });
 
     session.on('bind_transceiver', function (pdu) {
@@ -39,7 +40,7 @@ const server = smpp.createServer({
         const messageText = pdu.short_message.message;
 
         console.log('Received message from', senderId, 'to', recipient, ':', messageText);
-        sendSukatuMessage(senderId, recipient, messageText);
+        sendSukatuMessage(session, senderId, recipient, messageText);
         session.send(pdu.response({
             command_status: smpp.ESME_ROK
         }));
@@ -64,7 +65,8 @@ function checkAsyncUserPass(session, systemId, password, ipAddress, callback) {
         }
     });
 }
-function sendSukatuMessage(senderId, recipient, messageText, callback) {
+
+function sendSukatuMessage(session, senderId, recipient, messageText) {
     const sendingClient = smpp.connect('smpp://smpp.hubtel.com:2775');
 
     sendingClient.bind_transceiver({
@@ -84,32 +86,33 @@ function sendSukatuMessage(senderId, recipient, messageText, callback) {
             sendingClient.submit_sm(messageOptions, (submitPdu) => {
                 if (submitPdu.command_status === 0) {
                     console.log('Message sent successfully');
-                    sendingClient.on('deliver_sm', (deliverPdu) => {
-                        const messageId = deliverPdu.receipted_message_id;
-                        const status = deliverPdu.message_state;
-
-                        console.log('Received delivery report for message ID:', messageId, 'with status:', status);
-                    });
                 } else {
                     console.error('Error sending message:', submitPdu.command_status);
-                    sendingClient.unbind(() => {
-                        console.log('Unbound from the SMPP server due to error in sending message');
-                    });
-                }
-            });
-            sendingClient.on('deliver_sm', function(pdu) {
-                console.log('Received delivery report:', pdu);
-              
-                if (pdu.esm_class == 4) {
-                    var shortMessage = pdu.short_message;
-                    console.log('Received DR: %s', shortMessage);
-                    session.sendDeliveryReport(pdu);
-                    sendingClient.send(pdu.response());
                 }
             });
         } else {
             console.error('Failed to bind to the SMPP server for sending messages:', bindPdu.command_status);
-            sendingClient.disconnect();
+        }
+    });
+
+    sendingClient.on('deliver_sm', function(pdu) {
+        console.log('Received delivery report:', pdu);
+      
+        if (pdu.esm_class == 4) {
+            var shortMessage = pdu.short_message;
+            console.log('Received DR: %s', shortMessage);
+
+            // Construct a response PDU to send back to the client
+            const responsePdu = pdu.response();
+
+            // Send the response PDU back to the client's session
+            session.send(responsePdu, function(err) {
+                if (err) {
+                    console.error('Error sending delivery report response:', err);
+                } else {
+                    console.log('Delivery report response sent successfully');
+                }
+            });
         }
     });
 
