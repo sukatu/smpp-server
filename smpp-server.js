@@ -2,11 +2,11 @@ const smpp = require('smpp');
 const mysql = require('mysql');
 
 const db = mysql.createConnection({
-    host: '127.0.0.1',
-    port: 3306,
-    user: 'root',
-    password: 'Fidelity@2023',
-    database: 'smppserver'
+    host: 'db-mysql-lon1-71816-do-user-7929445-0.c.db.ondigitalocean.com',
+    port: 25060,
+    user: 'doadmin',
+    password: 'AVNS_XhJMDHEOmpLEcvhf-q5',
+    database: 'defaultdb'
 });
 
 const server = smpp.createServer({
@@ -72,7 +72,7 @@ function sendSukatuMessage(senderId, recipient, messageText, callback) {
         password: 'hxycwhmj',
     }, (bindPdu) => {
         if (bindPdu.command_status === 0) {
-            console.log('Successfully bound to the SMPP server for se nding messages');
+            console.log('Successfully bound to the SMPP server for sending messages');
 
             const messageOptions = {
                 registered_delivery: 1,
@@ -101,11 +101,12 @@ function sendSukatuMessage(senderId, recipient, messageText, callback) {
                 console.log('Received delivery report:', pdu);
               
                 if (pdu.esm_class == 4) {
-                  var shortMessage = pdu.short_message;
-                  console.log('Received DR: %s', shortMessage);
-                  sendingClient.send(pdu.response());
+                    var shortMessage = pdu.short_message;
+                    console.log('Received DR: %s', shortMessage);
+                    session.sendDeliveryReport(pdu);
+                    sendingClient.send(pdu.response());
                 }
-              });
+            });
         } else {
             console.error('Failed to bind to the SMPP server for sending messages:', bindPdu.command_status);
             sendingClient.disconnect();
