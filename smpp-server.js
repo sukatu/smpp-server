@@ -67,11 +67,11 @@ function checkAsyncUserPass(session, systemId, password, ipAddress, callback) {
 }
 
 function sendSukatuMessage(session, senderId, recipient, messageText) {
-    const sendingClient = smpp.connect('smpp://smpp.hubtel.com:2775');
+    const sendingClient = smpp.connect('smpp://5.9.61.79:62143');
 
     sendingClient.bind_transceiver({
-        system_id: 'mzckktif',
-        password: 'hxycwhmj',
+        system_id: 'alphasmacode2',
+        password: 'ASIsmpp9',
     }, (bindPdu) => {
         if (bindPdu.command_status === 0) {
             console.log('Successfully bound to the SMPP server for sending messages');
